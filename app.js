@@ -8,6 +8,7 @@ const TARGET_HOST = process.env.TARGET_HOST
 const TIMEOUT = process.env.TIMEOUT || 5000
 const PORT = process.env.PORT || 5000
 const MAX_AGE = process.env.MAX_AGE || 600
+const DEBUG_MODE = process.env.DEBUG_MODE == 'true' || false
 
 if (!TARGET_HOST) {
   console.error('💥 Missing target host name, exiting.')
@@ -58,7 +59,8 @@ async function takeScreenshot (url, selector, padding = 0, vpwidth, vpheight) {
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-dev-shm-usage'
-    ]
+    ],
+    headless: !DEBUG_MODE
   })
   const page = await browser.newPage()
 
@@ -67,7 +69,7 @@ async function takeScreenshot (url, selector, padding = 0, vpwidth, vpheight) {
 
   await page.goto(url, { waitUntil: 'networkidle2' })
             .catch((err) => { 
-              browser.close()
+              if (!DEBUG_MODE) browser.close()
               throw err
             })
 
@@ -96,6 +98,6 @@ async function takeScreenshot (url, selector, padding = 0, vpwidth, vpheight) {
     console.error(`💥 Can't find selector ${selector}`)
   }
 
-  browser.close()
+  if (!DEBUG_MODE) browser.close()
   return screenshot
 }

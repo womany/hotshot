@@ -14,6 +14,10 @@ Make sure you've got a current node and yarn installed. Then:
     $ yarn install
     $ TARGET_HOST="https://www.womany.net" yarn start
 
+Enable debug mode will start the Chromium in non-headless mode: 
+
+    $ TARGET_HOST="https://www.womany.net" DEBUG_MODE=true yarn start
+
 ## Start (with Docker)
 
 Build image:
