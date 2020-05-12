@@ -28,4 +28,6 @@ Start server:
 
 ## Request a screenshot:
 
-    $ curl -G "https://maker.womany.net/shoot?path=genderpower&selector=%23block113-gender" > screenshot.png
+    $ curl -G "https://maker.womany.net/shoot?path=genderpower%2fpedias%2f26187" > screenshot.png
+
+    $ curl -G "https://localhost:5000/shoot?path=genderpower%2fpedias%2f26187&selector=.genderpedia&padding=5&vpw=645" > screenshot.png
