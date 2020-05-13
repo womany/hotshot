@@ -66,6 +66,7 @@ async function takeScreenshot (url, selector, padding = 0, vpwidth, vpheight) {
 
   page.setDefaultNavigationTimeout(TIMEOUT)
   page.setViewport({ width: vpwidth, height: vpheight, deviceScaleFactor: 2 })
+  // page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
   await page.goto(url, { waitUntil: 'networkidle2' })
             .catch((err) => { 
@@ -83,15 +84,22 @@ async function takeScreenshot (url, selector, padding = 0, vpwidth, vpheight) {
   }, selector)
 
   if (rect) {
+    const clip = {
+      x: rect.left - padding,
+      y: rect.top - padding,
+      width: rect.width + padding * 2,
+      height: rect.height + padding * 2
+    }
+
+    if (clip.x < 0 || clip.y < 0) {
+      if (!DEBUG_MODE) browser.close()
+      throw Error(`💥 element padding (${padding}) overflow from page (x: ${clip.x}, ${clip.y})`)
+    }
+
     screenshot = await page.screenshot({
       // type: 'jpeg',
       // quality: 80,
-      clip: {
-        x: rect.left - padding,
-        y: rect.top - padding,
-        width: rect.width + padding * 2,
-        height: rect.height + padding * 2
-      }
+      clip: clip
     })
     console.log(`📸 ${url} => ${selector}`)
   } else {
