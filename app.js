@@ -40,10 +40,12 @@ app.get('/shoot', async (req, res) => {
       res.header('Cache-Control', `max-age=${MAX_AGE}, s-max-age=${MAX_AGE}, public, must-revalidate`)
       res.send(screenshot)
     } else {
+      console.error(`💥 takeScreenshot: no screenshot returned ${target}`)
       res.status(422)
       return res.end()
     }
   } catch (e) {
+    console.error(`💥 takeScreenshot: error catched on ${target}`)
     console.error(e)
     res.status(500)
     res.end()
@@ -69,10 +71,11 @@ async function takeScreenshot (url, selector, padding = 0, vpwidth, vpheight) {
   // page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
   await page.goto(url, { waitUntil: 'networkidle2' })
-            .catch((err) => { 
-              if (!DEBUG_MODE) browser.close()
-              throw err
-            })
+    .catch((err) => { 
+      if (!DEBUG_MODE) browser.close()
+      console.error(`💥 goto ${url} error`)
+      throw err
+    })
 
   const rect = await page.evaluate(selector => {
     const element = document.querySelector(selector)
@@ -82,6 +85,11 @@ async function takeScreenshot (url, selector, padding = 0, vpwidth, vpheight) {
     const { x, y, width, height } = element.getBoundingClientRect()
     return { left: x, top: y, width, height, id: element.id }
   }, selector)
+    .catch((err) => { 
+      if (!DEBUG_MODE) browser.close()
+      console.error(`💥 page.evaluate error on ${selector}`)
+      throw err
+    })
 
   if (rect) {
     const clip = {
@@ -93,7 +101,8 @@ async function takeScreenshot (url, selector, padding = 0, vpwidth, vpheight) {
 
     if (clip.x < 0 || clip.y < 0) {
       if (!DEBUG_MODE) browser.close()
-      throw Error(`💥 element padding (${padding}) overflow from page (x: ${clip.x}, ${clip.y})`)
+      console.error(`💥 page.evaluate error on ${selector}`)
+      throw Error(`element padding (${padding}) overflow from page (x: ${clip.x}, ${clip.y})`)
     }
 
     screenshot = await page.screenshot({
@@ -101,9 +110,14 @@ async function takeScreenshot (url, selector, padding = 0, vpwidth, vpheight) {
       // quality: 80,
       clip: clip
     })
+      .catch((err) => { 
+        if (!DEBUG_MODE) browser.close()
+        console.error('💥 page.screenshot error')
+        throw err
+      })
     console.log(`📸 ${url} => ${selector}`)
   } else {
-    console.error(`💥 Can't find selector ${selector}`)
+    console.error(`💥 Can't find selector ${url} => ${selector}`)
   }
 
   if (!DEBUG_MODE) browser.close()
