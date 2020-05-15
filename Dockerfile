@@ -30,6 +30,7 @@ WORKDIR /app
 COPY --chown=pptruser:pptruser . .
 
 ENV NODE_ENV=production
+ENV MAX_AGE=86400
 
 RUN yarn --cache-folder ./ycache && yarn install && rm -rf ./ycache
 

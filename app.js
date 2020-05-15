@@ -101,7 +101,7 @@ async function takeScreenshot (url, selector, padding = 0, vpwidth, vpheight) {
 
     if (clip.x < 0 || clip.y < 0) {
       if (!DEBUG_MODE) browser.close()
-      console.error(`💥 page.evaluate error on ${selector}`)
+      console.error(`💥 page.evaluate error on ${rect}`)
       throw Error(`element padding (${padding}) overflow from page (x: ${clip.x}, ${clip.y})`)
     }
 
