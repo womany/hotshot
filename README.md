@@ -24,11 +24,16 @@ Build image:
 
     $ docker build -t womany/hotshot .
     
-Remember to cleanup after building
+Remember to cleanup after building and `sudo docker info` tocheck if kernel opened memory limit function
 
 Start server:
 
-    $ docker run -d -p 5000:5000 -e PORT=5000 -e TIMEOUT=30000 -e TARGET_HOST='https://womany.net' womany/hotshot
+    $ docker run -d -m 1G -p 5000:5000 -e PORT=5000 -e TIMEOUT=30000 -e TARGET_HOST='https://womany.net' womany/hotshot
+
+    d = daemon mode
+    m = memory limit, it will limit 1G memory and 1G swap
+    p = port mapping host:container
+    e = environment variable
 
 ## Request a screenshot:
 
